@@ -18,6 +18,11 @@ class Window(Gtk.ApplicationWindow):
         hbox.pack_start(feed_list.props.stack, True, True, 0)
         self.add(hbox)
 
+        feed_list.props.stack.add_titled(
+            Gtk.Label('Flux 1'), 'flux1', 'Titre Flux 1')
+        feed_list.props.stack.add_titled(
+            Gtk.Label('Flux 2'), 'flux2', 'Titre Flux 2')
+
 
 class Plop(Gtk.Application):
     def do_activate(self):
