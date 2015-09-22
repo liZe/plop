@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
+import feedparser
 import sys
 import webbrowser
 from gi.repository import Gtk
 
 
 class Feed(Gtk.TreeView):
-    def __init__(self, name):
+    def __init__(self, name, url):
         super().__init__()
 
         store = Gtk.ListStore(str, str)
@@ -17,8 +18,8 @@ class Feed(Gtk.TreeView):
 
         self.connect('row-activated', self.activated)
 
-        store.append(('Python ' + name, 'https://python.org'))
-        store.append(('xkcd ' + name, 'https://xkcd.com/'))
+        for entry in feedparser.parse(url).entries:
+            store.append((entry.title, entry.link))
 
     def activated(self, treeview, path, view):
         webbrowser.open(treeview.props.model[path][1])
@@ -39,9 +40,11 @@ class Window(Gtk.ApplicationWindow):
         self.add(hbox)
 
         feed_list.props.stack.add_titled(
-            Feed('Flux 1'), 'flux1', 'Titre Flux 1')
+            Feed('LinuxFR', 'https://linuxfr.org/news.atom'),
+            'linuxfr', 'LinuxFR')
         feed_list.props.stack.add_titled(
-            Feed('Flux 2'), 'flux2', 'Titre Flux 2')
+            Feed('L’équipe', 'http://www.lequipe.fr/rss/actu_rss.xml'),
+            'lequipe', 'L’équipe')
 
 
 class Plop(Gtk.Application):
