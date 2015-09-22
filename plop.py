@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 
+import configparser
 import feedparser
+import os
 import sys
 import webbrowser
 from gi.repository import Gtk
@@ -43,15 +45,14 @@ class Window(Gtk.ApplicationWindow):
         hbox.pack_start(feed_list.props.stack, True, True, 0)
         self.add(hbox)
 
-        scroll = Gtk.ScrolledWindow()
-        feed = Feed('LinuxFR', 'https://linuxfr.org/news.atom')
-        scroll.add(feed)
-        feed_list.props.stack.add_titled(scroll, 'linuxfr', 'LinuxFR')
+        config = configparser.SafeConfigParser()
+        config.read(os.path.expanduser('~/.config/plop'))
 
-        scroll = Gtk.ScrolledWindow()
-        feed = Feed('L’équipe', 'http://www.lequipe.fr/rss/actu_rss.xml')
-        scroll.add(feed)
-        feed_list.props.stack.add_titled(scroll, 'lequipe', 'L’équipe')
+        for section in config.sections():
+            scroll = Gtk.ScrolledWindow()
+            feed = Feed(section, config[section]['url'])
+            scroll.add(feed)
+            feed_list.props.stack.add_titled(scroll, section, section)
 
 
 class Plop(Gtk.Application):
