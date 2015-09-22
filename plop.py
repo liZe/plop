@@ -9,6 +9,7 @@ from gi.repository import Gtk
 class Feed(Gtk.TreeView):
     def __init__(self, name, url):
         super().__init__()
+        self.set_headers_visible(False)
 
         store = Gtk.ListStore(str, str)
         self.set_model(store)
@@ -30,21 +31,27 @@ class Window(Gtk.ApplicationWindow):
         super().__init__(application=application)
         self.set_title('Plop')
         self.set_icon_name('edit-find')
+        self.set_hide_titlebar_when_maximized(True)
 
         hbox = Gtk.HBox()
         feed_list = Gtk.StackSidebar()
         feed_list.set_stack(Gtk.Stack())
+        feed_list.props.stack.set_transition_type(
+            Gtk.StackTransitionType.CROSSFADE)
 
         hbox.pack_start(feed_list, False, False, 0)
         hbox.pack_start(feed_list.props.stack, True, True, 0)
         self.add(hbox)
 
-        feed_list.props.stack.add_titled(
-            Feed('LinuxFR', 'https://linuxfr.org/news.atom'),
-            'linuxfr', 'LinuxFR')
-        feed_list.props.stack.add_titled(
-            Feed('L’équipe', 'http://www.lequipe.fr/rss/actu_rss.xml'),
-            'lequipe', 'L’équipe')
+        scroll = Gtk.ScrolledWindow()
+        feed = Feed('LinuxFR', 'https://linuxfr.org/news.atom')
+        scroll.add(feed)
+        feed_list.props.stack.add_titled(scroll, 'linuxfr', 'LinuxFR')
+
+        scroll = Gtk.ScrolledWindow()
+        feed = Feed('L’équipe', 'http://www.lequipe.fr/rss/actu_rss.xml')
+        scroll.add(feed)
+        feed_list.props.stack.add_titled(scroll, 'lequipe', 'L’équipe')
 
 
 class Plop(Gtk.Application):
