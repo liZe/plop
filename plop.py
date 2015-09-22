@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import sys
+import webbrowser
 from gi.repository import Gtk
 
 
@@ -8,14 +9,19 @@ class Feed(Gtk.TreeView):
     def __init__(self, name):
         super().__init__()
 
-        store = Gtk.ListStore(str)
+        store = Gtk.ListStore(str, str)
         self.set_model(store)
         pane_cell = Gtk.CellRendererText()
         pane_column = Gtk.TreeViewColumn('Articles', pane_cell, text=0)
         self.append_column(pane_column)
 
-        store.append(('Lien 1 ' + name,))
-        store.append(('Lien 2 ' + name,))
+        self.connect('row-activated', self.activated)
+
+        store.append(('Python ' + name, 'https://python.org'))
+        store.append(('xkcd ' + name, 'https://xkcd.com/'))
+
+    def activated(self, treeview, path, view):
+        webbrowser.open(treeview.props.model[path][1])
 
 
 class Window(Gtk.ApplicationWindow):
