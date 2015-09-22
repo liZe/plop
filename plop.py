@@ -4,6 +4,20 @@ import sys
 from gi.repository import Gtk
 
 
+class Feed(Gtk.TreeView):
+    def __init__(self, name):
+        super().__init__()
+
+        store = Gtk.ListStore(str)
+        self.set_model(store)
+        pane_cell = Gtk.CellRendererText()
+        pane_column = Gtk.TreeViewColumn('Articles', pane_cell, text=0)
+        self.append_column(pane_column)
+
+        store.append(('Lien 1 ' + name,))
+        store.append(('Lien 2 ' + name,))
+
+
 class Window(Gtk.ApplicationWindow):
     def __init__(self, application):
         super().__init__(application=application)
@@ -19,9 +33,9 @@ class Window(Gtk.ApplicationWindow):
         self.add(hbox)
 
         feed_list.props.stack.add_titled(
-            Gtk.Label('Flux 1'), 'flux1', 'Titre Flux 1')
+            Feed('Flux 1'), 'flux1', 'Titre Flux 1')
         feed_list.props.stack.add_titled(
-            Gtk.Label('Flux 2'), 'flux2', 'Titre Flux 2')
+            Feed('Flux 2'), 'flux2', 'Titre Flux 2')
 
 
 class Plop(Gtk.Application):
