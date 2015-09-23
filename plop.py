@@ -5,7 +5,7 @@ import feedparser
 import os
 import sys
 import webbrowser
-from gi.repository import Gtk
+from gi.repository import Gtk, GLib
 
 
 class Feed(Gtk.TreeView):
@@ -63,6 +63,7 @@ class Plop(Gtk.Application):
         self.window = Window(self)
         self.window.connect('destroy', lambda window: sys.exit())
         self.window.update()
+        GLib.timeout_add_seconds(30, lambda: self.window.update() or True)
 
 
 if __name__ == '__main__':
