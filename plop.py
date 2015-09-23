@@ -49,6 +49,7 @@ class Window(Gtk.ApplicationWindow):
         self.config.read(os.path.expanduser('~/.config/plop'))
 
     def update(self):
+        active = self.feed_list.props.stack.get_visible_child_name()
         for child in self.feed_list.props.stack.get_children():
             self.feed_list.props.stack.remove(child)
         for section in self.config.sections():
@@ -56,6 +57,8 @@ class Window(Gtk.ApplicationWindow):
             scroll.add(Feed(section, self.config[section]['url']))
             self.feed_list.props.stack.add_titled(scroll, section, section)
         self.show_all()
+        if active:
+            self.feed_list.props.stack.set_visible_child_name(active)
 
 
 class Plop(Gtk.Application):
