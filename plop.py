@@ -36,30 +36,33 @@ class Window(Gtk.ApplicationWindow):
         self.set_hide_titlebar_when_maximized(True)
 
         hbox = Gtk.HBox()
-        feed_list = Gtk.StackSidebar()
-        feed_list.set_stack(Gtk.Stack())
-        feed_list.props.stack.set_transition_type(
+        self.feed_list = Gtk.StackSidebar()
+        self.feed_list.set_stack(Gtk.Stack())
+        self.feed_list.props.stack.set_transition_type(
             Gtk.StackTransitionType.CROSSFADE)
 
-        hbox.pack_start(feed_list, False, False, 0)
-        hbox.pack_start(feed_list.props.stack, True, True, 0)
+        hbox.pack_start(self.feed_list, False, False, 0)
+        hbox.pack_start(self.feed_list.props.stack, True, True, 0)
         self.add(hbox)
 
-        config = configparser.SafeConfigParser()
-        config.read(os.path.expanduser('~/.config/plop'))
+        self.config = configparser.SafeConfigParser()
+        self.config.read(os.path.expanduser('~/.config/plop'))
 
-        for section in config.sections():
+    def update(self):
+        for child in self.feed_list.props.stack.get_children():
+            self.feed_list.props.stack.remove(child)
+        for section in self.config.sections():
             scroll = Gtk.ScrolledWindow()
-            feed = Feed(section, config[section]['url'])
-            scroll.add(feed)
-            feed_list.props.stack.add_titled(scroll, section, section)
+            scroll.add(Feed(section, self.config[section]['url']))
+            self.feed_list.props.stack.add_titled(scroll, section, section)
+        self.show_all()
 
 
 class Plop(Gtk.Application):
     def do_activate(self):
         self.window = Window(self)
         self.window.connect('destroy', lambda window: sys.exit())
-        self.window.show_all()
+        self.window.update()
 
 
 if __name__ == '__main__':
